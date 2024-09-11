@@ -12,15 +12,13 @@ The app within this repository is a platform dedicated to showcasing projects fo
 
 You will find a range of tools built to help develop intuition. Delve into basic or more advanced models like the Black-Scholes options pricing model and discover how various factors influence options pricing and their outcomes.
 
-# Example of Four Images in a Single Line
+Below are four images of the overall project:
 
-Below are four small-sized images aligned in a single row:
-
-<div style="display: flex; justify-content: space-between;">
-  <img src="https://github.com/Remi-Ferrari/Options_Modelling_in_Python/blob/a5bfc18553a101bc062d531753ac0584650e3ccf/Project%20Images/Project_Dashboard.png?raw=true" alt="Image 1" width="100" height="100">
-  <img src="https://github.com/Remi-Ferrari/Options_Modelling_in_Python/blob/a5bfc18553a101bc062d531753ac0584650e3ccf/Project%20Images/Project_Basic_PNL_Pricing.png?raw=true" alt="Image 2" width="100" height="100">
-  <img src="https://github.com/Remi-Ferrari/Options_Modelling_in_Python/blob/a5bfc18553a101bc062d531753ac0584650e3ccf/Project%20Images/Project_BlackScholes_Pricing.png?raw=true" alt="Image 3" width="100" height="100">
-  <img src="https://github.com/Remi-Ferrari/Options_Modelling_in_Python/blob/a5bfc18553a101bc062d531753ac0584650e3ccf/Project%20Images/Project_BlackScholes_PNL_Pricing.png?raw=true" alt="Image 4" width="100" height="100">
+<div style="display: flex; justify-content: space-around; padding: 10px;">
+  <img src="https://github.com/Remi-Ferrari/Options_Modelling_in_Python/blob/a5bfc18553a101bc062d531753ac0584650e3ccf/Project%20Images/Project_Basic_PNL_Pricing.png?raw=true" alt="Image 1" width="100" height="100" style="border: 3px solid white; margin: 0 10px;">
+  <img src="https://github.com/Remi-Ferrari/Options_Modelling_in_Python/blob/a5bfc18553a101bc062d531753ac0584650e3ccf/Project%20Images/Project_Dashboard.png?raw=true" alt="Image 2" width="100" height="100" style="border: 3px solid white; margin: 0 10px;">
+  <img src="https://github.com/Remi-Ferrari/Options_Modelling_in_Python/blob/a5bfc18553a101bc062d531753ac0584650e3ccf/Project%20Images/Project_BlackScholes_Pricing.png?raw=true" alt="Image 3" width="100" height="100" style="border: 3px solid white; margin: 0 10px;">
+  <img src="https://github.com/Remi-Ferrari/Options_Modelling_in_Python/blob/a5bfc18553a101bc062d531753ac0584650e3ccf/Project%20Images/Project_BlackScholes_PNL_Pricing.png?raw=true" alt="Image 4" width="100" height="100" style="border: 3px solid white; margin: 0 10px;">
 </div>
 
 
