@@ -25,6 +25,7 @@ def go_to_project3():
 def run_project1():
 
     import streamlit as st
+    import scipy
     from scipy.stats import norm
     import numpy as np
     from numpy import log, sqrt, exp
@@ -268,6 +269,7 @@ def run_project1():
 def run_project2():
 
     import numpy as np
+    import scipy
     from scipy.stats import norm
     from numpy import log, sqrt, exp
     import matplotlib.pyplot as plt
