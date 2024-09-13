@@ -1,7 +1,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Options Modelling in Python: Dashboard",
+    page_title="Options Modelling in Python",
     layout="wide",
     initial_sidebar_state="expanded")
 
@@ -20,6 +20,9 @@ def go_to_project2():
 
 def go_to_project3():
     st.session_state.page = "project3"
+
+def go_to_project4():
+    st.session_state.page = "project4"
 
 # function to run Project 1 (BS_Pricing)
 def run_project1():
@@ -711,6 +714,214 @@ def run_project3():
         ax_put.legend()
         st.pyplot(fig_put)
 
+def run_project4():
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    # CSS
+    st.markdown("""
+    <style>
+    .FB1 {
+        display: flex;
+        margin-top: -55px; 
+        margin-bottom: 8px;
+        width: 80%;
+        text-align: left;
+        box-sizing: border-box;
+        padding: 0.1em 0.22em;
+        font-size: 22px;
+        font-weight: bold;
+        color: white;
+        background-color: #090A0B;
+        border: 1px solid #090A0B;
+        border-radius: 4px;
+        cursor: default;
+        text-decoration: none;
+    }
+    .FB2 {
+        display: flex;
+        margin-top: -22px; 
+        margin-bottom: 28px;
+        width: 100%;
+        text-align: left;
+        box-sizing: border-box;
+        padding: 0.1em 0.22em;
+        font-size: 22px;
+        font-weight: bold;
+        color: white;
+        background-color: #090A0B;
+        border: 1px solid #090A0B;
+        border-radius: 4px;
+        cursor: default;
+        text-decoration: none;
+    }
+    .metric-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 8px; 
+        width: auto; 
+        margin: 0 auto; 
+    }
+    .metric-call {
+        background-color: #90ee90; 
+        color: black; 
+        margin-right: 10px; 
+        border-radius: 10px; 
+    }
+    .metric-put {
+        background-color: #ffcccb; 
+        color: black; 
+        border-radius: 10px; 
+    }
+    .metric-value {
+        font-size: 1.5rem; 
+        font-weight: bold;
+        margin: 0; 
+    }
+    .metric-label {
+        font-size: 1rem; 
+        margin-bottom: 4px; 
+    }
+
+    #binomial-eu-options-pricing-model > span:nth-child(1) > a:nth-child(1) a {
+        display: none !important;
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Binomial Options Pricing Model
+    def binomial_option_pricing(S, K, T, r, sigma, n, option_type='call'):
+        dt = T / n
+        u = np.exp(sigma * np.sqrt(dt))  # Up factor
+        d = 1 / u  # Down factor
+        p = (np.exp(r * dt) - d) / (u - d)  # Risk-neutral probability
+
+        # Initialize asset price at maturity for each node
+        asset_prices = np.zeros(n + 1)
+
+        # Compute asset prices at maturity
+        for i in range(n + 1):
+            asset_prices[i] = S * (u ** i) * (d ** (n - i))
+
+        # Initialize option values at maturity
+        option_values = np.zeros(n + 1)
+
+        # Compute option values at maturity
+        if option_type == 'call':
+            option_values = np.maximum(0, asset_prices - K)  # Call payoff
+        elif option_type == 'put':
+            option_values = np.maximum(0, K - asset_prices)  # Put payoff
+
+        # Backward induction for option price
+        for j in range(n - 1, -1, -1):
+            for i in range(j + 1):
+                option_values[i] = np.exp(-r * dt) * (p * option_values[i + 1] + (1 - p) * option_values[i])
+
+        return option_values[0]
+
+    # Sidebar
+    with st.sidebar:
+        st.markdown('<div class="FB1">Model Parameters </div >', unsafe_allow_html=True)
+        current_price = st.number_input("Underlying Asset Price", value=100.0)
+        strike = st.number_input("Option Strike Price", value=100.0)
+        time_to_maturity = st.number_input("Time to Maturity (Years)", value=1.0)
+        volatility = st.number_input("Expected Volatility of Underlying Asset", value=0.2)
+        interest_rate = st.number_input("Risk-Free Rate", value=0.05)
+        steps = st.number_input("Number of Steps in Binomial Model", value=100, min_value=1)
+
+        st.markdown("---")
+
+        st.markdown('<div class="FB2">Heatmap Parameters </div >', unsafe_allow_html=True)
+        spot_min = st.slider('Min Spot Price', min_value=0.01, value=current_price * 0.8, step=0.01)
+        spot_max = st.slider('Max Spot Price', min_value=0.01, value=current_price * 1.2, step=0.01)
+        vol_min = st.slider('Min Volatility for Heatmap', min_value=0.01, max_value=1.0, value=volatility * 0.5,
+                            step=0.01)
+        vol_max = st.slider('Max Volatility for Heatmap', min_value=0.01, max_value=1.0, value=volatility * 1.5,
+                            step=0.01)
+
+        spot_range = np.linspace(spot_min, spot_max, 10)
+        vol_range = np.linspace(vol_min, vol_max, 10)
+
+        st.markdown("---")
+
+    def plot_heatmap(current_price, strike, time_to_maturity, interest_rate, steps, spot_range, vol_range,
+                     option_type='call'):
+        prices = np.zeros((len(vol_range), len(spot_range)))
+
+        for i, vol in enumerate(vol_range):
+            for j, spot in enumerate(spot_range):
+                price = binomial_option_pricing(
+                    S=spot, K=strike, T=time_to_maturity, r=interest_rate, sigma=vol, n=steps, option_type=option_type
+                )
+                prices[i, j] = price
+
+        # Heatmap
+        fig, ax = plt.subplots(figsize=(10, 8))
+        sns.heatmap(prices, xticklabels=np.round(spot_range, 2), yticklabels=np.round(vol_range, 2), annot=True,
+                    fmt=".2f", cmap="viridis", ax=ax)
+        ax.set_title(f'{option_type.upper()} Option Price Heatmap')
+        ax.set_xlabel('Underlying Asset Price')
+        ax.set_ylabel('Expected Volatility')
+
+        return fig
+
+    # Main Page
+
+    st.title("Binomial EU Options Pricing Model")
+
+    # Calculate Call and Put values
+    call_price = binomial_option_pricing(current_price, strike, time_to_maturity, interest_rate, volatility, steps,
+                                         option_type='call')
+    put_price = binomial_option_pricing(current_price, strike, time_to_maturity, interest_rate, volatility, steps,
+                                        option_type='put')
+
+    st.markdown("")
+
+    st.info(
+        "Visualize potential Call and Put Option values based on the Binomial Options Pricing model using the interactive heatmap. Model parameters include **Underlying Asset Price**, **Option Strike Price**, **Time to Maturity**, **Volatility**, **Risk-Free Rate**, and **Number of Steps**.")
+
+    # Interactive Heatmaps
+    col1, col2 = st.columns([1, 1], gap="small")
+
+    with col1:
+        st.subheader("Call Price Heatmap")
+        heatmap_fig_call = plot_heatmap(current_price, strike, time_to_maturity, interest_rate, steps, spot_range,
+                                        vol_range, option_type='call')
+        st.pyplot(heatmap_fig_call)
+
+    with col2:
+        st.subheader("Put Price Heatmap")
+        heatmap_fig_put = plot_heatmap(current_price, strike, time_to_maturity, interest_rate, steps, spot_range,
+                                       vol_range, option_type='put')
+        st.pyplot(heatmap_fig_put)
+
+    col1, col2 = st.columns([1, 1], gap="small")
+
+    # CALL & PUT Value boxes
+    with col1:
+        st.markdown(f"""
+            <div class="metric-container metric-call">
+                <div>
+                    <div class="metric-label">CALL Value</div>
+                    <div class="metric-value">${call_price:.2f}</div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown(f"""
+            <div class="metric-container metric-put">
+                <div>
+                    <div class="metric-label">PUT Value</div>
+                    <div class="metric-value">${put_price:.2f}</div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+
 # Main Page or Home page
 if st.session_state.page == "home":
 
@@ -816,6 +1027,9 @@ if st.session_state.page == "home":
     if st.button("Black-Scholes Options P&L Scenarios - Interactive Heatmap"):
         go_to_project2()
 
+    if st.button("Binomial EU Options Pricing Model"):
+        go_to_project4()
+
     if st.button("Theoretical Option P&L Heatmap and Graph"):
         go_to_project3()
 
@@ -831,6 +1045,10 @@ elif st.session_state.page == "project3":
     run_project3()
     st.sidebar.button("Home", on_click=go_home)
 
+elif st.session_state.page == "project4":
+    run_project4()
+    st.sidebar.button("Home", on_click=go_home)
+
 
 if st.session_state.page == "home":
 
@@ -841,20 +1059,20 @@ if st.session_state.page == "home":
         st.write("")
 
         st.info("""
-                        This platform is dedicated to showcasing projects focused on the topic of options pricing.
-                        Dive into the world of options and explore their pricing mechanisms and the impact on
-                        profit and loss through the projects listed below. Whether you are looking to understand 
-                        the fundamentals, visualize basic options pricing, or analyze P&L charts, 
-                        you will find a range of tools built to develop intuition. 
-                        Delve into more advanced models like the Black-Scholes options pricing model 
-                        and discover how various factors influence options pricing and their outcomes.
+This platform is dedicated to showcasing projects focused on the topic of options pricing.
+Dive into the world of options and explore their pricing mechanisms and the impact on
+profit and loss through the projects listed below. Whether you are looking to understand 
+the fundamentals, visualize basic options pricing, or analyze P&L charts, 
+you will find a range of tools built to develop intuition. 
+Delve into more advanced models like the Black-Scholes options pricing model 
+and discover how various factors influence options pricing and their outcomes.
 
-                        The project was built using Python, CSS & html coding languages. 
-                        Python framework, Streamlit, was utilized for displaying this project. 
-                        Python libraries include: scipy, numpy, seaborn and matplotlib. 
+The project was built using Python, CSS & html coding languages. 
+Python framework, Streamlit, was utilized for displaying this project. 
+Python libraries include: scipy, numpy, seaborn and matplotlib. 
 
-                        Much credit goes to the prior work of [Prudhvi Reddy M](https://github.com/prudhvi-reddy-m) 
-                        and [Tim Freiberg](https://github.com/tmfreiberg) within this area.
+Much credit goes to the prior work of [Prudhvi Reddy M](https://github.com/prudhvi-reddy-m) 
+and [Tim Freiberg](https://github.com/tmfreiberg) within this area.
 
 
 
