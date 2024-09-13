@@ -4,6 +4,10 @@ This project was created to expand my knowledge and intuition in Python and the 
 
 ## About the Project
 
+Run project using streamlit cloud with this link: [Project Options Modelling in Python](https://project-options-modelling-in-python.streamlit.app/)
+
+or run locally by downloading appcopy.py file and entering terminal command: streamlit run appcopy.py
+
 The app within this repository is a platform dedicated to showcasing projects focused on the topic of options pricing. Dive into the world of options and explore their pricing mechanisms and the impact on profit and loss through the projects listed below. Whether you are looking to:
 
 - Understand the fundamentals
